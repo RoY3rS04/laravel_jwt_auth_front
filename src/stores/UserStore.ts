@@ -1,15 +1,5 @@
 import { create } from "zustand";
 import axiosInstance from "../utils/axios";
-import { AxiosError } from "axios";
-
-interface User {
-    id: number;
-    name: string;
-    email: string;
-    email_verified_at: string;
-    created_at: string;
-    updated_at: string;
-}
 
 interface UserStore {
     user?: User,
@@ -30,9 +20,9 @@ const userStore = create<UserStore>()((set) => ({
         }
 
         try {
-            const { data } = await axiosInstance.get<User>('/user');
+            const { data } = await axiosInstance.get<UserResponse>('/user');
 
-            set(() => ({ user: data }));
+            set(() => ({ user: data.user }));
         } catch (error) {
             set(() => ({ user: undefined }));
             //TODO alert
@@ -40,7 +30,19 @@ const userStore = create<UserStore>()((set) => ({
 
         set(() => ({ loading: false }));
     },
-    logOut: () => set(() => ({ user: undefined })),
+    logOut: async () => {
+        try {
+            const { data } = await axiosInstance.post<ApiResponse>('/user');
+
+            set(() => ({ user: undefined }));
+
+            localStorage.removeItem('token');
+
+            location.href = '/login';
+        } catch (error) {
+            //TODO alert
+        }
+    },
     verifyEmail: async (token) => {
 
         try {
