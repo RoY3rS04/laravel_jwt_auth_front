@@ -1,12 +1,14 @@
 import { create } from "zustand";
 import axiosInstance from "../utils/axios";
+import getFormData from '../utils/getFormData';
 
 interface UserStore {
     user?: User,
     loading: boolean,
     getUser: () => Promise<void>,
     logOut: () => void,
-    verifyEmail: (token: string) => void
+    verifyEmail: (token: string) => void,
+    updateUser: (body: FormData) => void
 }
 
 const userStore = create<UserStore>()((set) => ({
@@ -57,6 +59,19 @@ const userStore = create<UserStore>()((set) => ({
 
         set(() => ({ loading: false }));
 
+    },
+    updateUser: async (body) => {
+
+        try {
+            const { data } = await axiosInstance.post<UserResponse>(`/user`, {
+                ...getFormData(body),
+                _method: 'PATCH'
+            });
+
+            console.log(data);
+        } catch (error) {
+            //TODO alert
+        }
     }
 }));
 

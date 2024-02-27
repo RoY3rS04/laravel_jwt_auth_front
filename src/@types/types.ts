@@ -19,3 +19,7 @@ interface User {
 interface UserResponse extends ApiResponse {
     user: User
 }
+
+interface Data {
+    [k: string]: any
+}
