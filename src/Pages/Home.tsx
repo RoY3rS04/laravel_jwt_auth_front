@@ -13,7 +13,7 @@ export default function Home() {
     }
 
     return (
-        <section className="p-3 h-full">
+        <section className="p-3 h-full flex flex-col">
             <header className="flex justify-between py-3 px-4">
                 <h1 className="text-lg font-medium">JWT AUTH</h1>
                 <div className="flex gap-x-2 items-center relative">
@@ -38,6 +38,9 @@ export default function Home() {
                     </div>
                 </div>
             </header>
+            <div className="w-full flex flex-1 items-center justify-center">
+                <h1 className="text-3xl font-bold">Welcome Again, { user?.name }!</h1>
+            </div>
         </section>
     )
 

@@ -1,4 +1,19 @@
+import { FormEvent } from "react";
+import userStore from "../stores/UserStore";
+
 export default function DeleteAccount() {
+
+    const { deleteAccount } = userStore();
+
+    function handleSubmit(e: FormEvent<HTMLFormElement>) {
+
+        e.preventDefault();
+
+        const data = new FormData(e.target as HTMLFormElement);
+
+        deleteAccount(data);
+
+    }
 
     return (
         <div className="bg-white rounded-md p-5 w-[80%] space-y-5 shadow-xl">
@@ -6,7 +21,7 @@ export default function DeleteAccount() {
                 <h3 className="text-lg font-medium">Delete Your Account</h3>
                 <p className="text-sm">By doing this action all your info will be lost, so be sure this is actually what you want to do</p>
             </div>
-            <form className="space-y-5">
+            <form onSubmit={handleSubmit} className="space-y-5">
                 <div className="space-y-2">
                     <label htmlFor="password_2">Your Password</label>
                     <input className="block w-full py-2 px-3 rounded-md border-[1px]" id="password_2" name="password" type="password" />

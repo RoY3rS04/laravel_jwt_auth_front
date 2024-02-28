@@ -21,7 +21,7 @@ export default function Protected() {
             {
                 user?.id ? 
                     (
-                        <main className="min-w-screen min-h-screen">
+                        <main className="w-full h-full">
                             <Outlet></Outlet>
                         </main >
                     )

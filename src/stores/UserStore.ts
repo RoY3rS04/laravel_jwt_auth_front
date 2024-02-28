@@ -8,7 +8,9 @@ interface UserStore {
     getUser: () => Promise<void>,
     logOut: () => void,
     verifyEmail: (token: string) => void,
-    updateUser: (body: FormData) => void
+    updateUser: (body: FormData) => void,
+    changePassword: (body: FormData) => void,
+    deleteAccount: (body: FormData) => void
 }
 
 const userStore = create<UserStore>()((set) => ({
@@ -68,7 +70,37 @@ const userStore = create<UserStore>()((set) => ({
                 _method: 'PATCH'
             });
 
-            console.log(data);
+            set(() => ({ user: data.user }));
+
+            //TODO alert
+        } catch (error) {
+            //TODO alert
+        }
+    },
+    changePassword: async (body) => {
+
+        try {
+            const { data } = await axiosInstance.post<ApiResponse>(`/user/change-password`, {
+                ...getFormData(body),
+                _method: 'PATCH'
+            });
+
+            //TODO alert
+        } catch (error) {
+            //TODO alert
+        }
+
+    },
+    deleteAccount: async (body) => {
+        try {
+            const { data } = await axiosInstance.post<ApiResponse>(`/user`, {
+                ...getFormData(body),
+                _method: 'DELETE'
+            });
+
+            //TODO alert
+
+            set(() => ({ user: undefined }));
         } catch (error) {
             //TODO alert
         }
