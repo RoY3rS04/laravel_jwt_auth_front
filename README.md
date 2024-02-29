@@ -14,7 +14,9 @@ Please follow the instructions bellow.
 npm install
 ```
 
-4. Run in development
+4. Copy .env.example into .env and replace values.
+
+5. Run in development
 
 ```
 npm run dev
