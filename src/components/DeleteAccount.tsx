@@ -1,9 +1,11 @@
-import { FormEvent } from "react";
+import { FormEvent, useState } from "react";
 import userStore from "../stores/UserStore";
+import Alert from "./Alert";
 
 export default function DeleteAccount() {
 
     const { deleteAccount } = userStore();
+    const [alert, setAlert] = useState<Alert | undefined>(undefined);
 
     function handleSubmit(e: FormEvent<HTMLFormElement>) {
 
@@ -11,7 +13,7 @@ export default function DeleteAccount() {
 
         const data = new FormData(e.target as HTMLFormElement);
 
-        deleteAccount(data);
+        deleteAccount(data, setAlert);
 
     }
 
@@ -29,6 +31,11 @@ export default function DeleteAccount() {
                 <button className="py-3 px-2 rounded-md bg-red-600 text-sm text-white font-medium">
                     Delete Account
                 </button>
+                {
+                    alert ?
+                        (<Alert msg={alert.msg} success={alert.success}></Alert>)
+                    : null
+                }
             </form>
         </div>
     )

@@ -1,9 +1,11 @@
-import { FormEvent } from "react";
+import { FormEvent, useState } from "react";
 import userStore from "../stores/UserStore";
+import Alert from "./Alert";
 
 export default function ChangePassword() {
     
     const { changePassword } = userStore();
+    const [alert, setAlert] = useState<Alert | undefined>(undefined);
 
     function handleSubmit(e: FormEvent<HTMLFormElement>) {
 
@@ -11,7 +13,7 @@ export default function ChangePassword() {
 
         const data = new FormData(e.target as HTMLFormElement);
 
-        changePassword(data);
+        changePassword(data, setAlert);
 
     }
 
@@ -37,6 +39,11 @@ export default function ChangePassword() {
                 <button className="py-3 px-2 rounded-md bg-slate-900 text-sm text-white font-medium">
                     Change Password
                 </button>
+                {
+                    alert ?
+                        (<Alert msg={alert.msg} success={alert.success}></Alert>)
+                    : null
+                }
             </form>
         </div>
     )

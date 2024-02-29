@@ -23,3 +23,8 @@ interface UserResponse extends ApiResponse {
 interface Data {
     [k: string]: any
 }
+
+interface Alert {
+    msg: string,
+    success: boolean
+}

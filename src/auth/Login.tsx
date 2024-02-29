@@ -1,7 +1,13 @@
-import { FormEvent } from "react";
+import { FormEvent, useState } from "react";
 import axiosInstance from "../utils/axios";
+import Alert from "../components/Alert";
+import { AxiosError } from "axios";
+import alertStore from "../stores/AlertStore";
 
 export default function Login() {
+
+    const [alert, setAlert] = useState<Alert | undefined>(undefined);
+    const { setAlert: setAlertState } = alertStore();
 
     async function handleSubmit(e: FormEvent<HTMLFormElement>) {
 
@@ -10,13 +16,20 @@ export default function Login() {
         const formData = new FormData(e.target as HTMLFormElement);
 
         try {
-            const {data} = await axiosInstance.post<TokenResponse>('/login', formData);
+            const { data } = await axiosInstance.post<TokenResponse>('/login', formData);
+            
+            setAlertState(setAlert, { msg: data.msg, success: true });
 
             localStorage.setItem('token', data.token);
 
             location.href = '/home';
         } catch (error) {
-            //TODO alert 
+            if (error instanceof AxiosError) {
+
+                const { message, msg } = error.response?.data;
+
+                setAlertState(setAlert, { msg: msg ?? message, success: false });
+            }
         }
 
     }
@@ -33,6 +46,11 @@ export default function Login() {
                     <input className="block w-full py-2 px-3 rounded-md border-[1px]" name="password" id="password" type="password" />
                 </div>
                 <button className="py-2 px-3 font-semibold text-white bg-slate-900 rounded-md w-full">Login</button>
+                {
+                    alert ?
+                        (<Alert msg={alert.msg} success={alert.success}></Alert>)
+                    : null
+                }
             </form>
         </div>
     )

@@ -1,16 +1,19 @@
 import { create } from "zustand";
 import axiosInstance from "../utils/axios";
 import getFormData from '../utils/getFormData';
+import { AxiosError } from "axios";
+import alertStore from './AlertStore';
+import { SetCall } from "./AlertStore";
 
 interface UserStore {
     user?: User,
     loading: boolean,
     getUser: () => Promise<void>,
-    logOut: () => void,
-    verifyEmail: (token: string) => void,
-    updateUser: (body: FormData) => void,
-    changePassword: (body: FormData) => void,
-    deleteAccount: (body: FormData) => void
+    logOut: (alertCall: SetCall<Alert>) => void,
+    verifyEmail: (token: string, alertCall: SetCall<Alert>) => void,
+    updateUser: (body: FormData, alertCall: SetCall<Alert>) => void,
+    changePassword: (body: FormData, alertCall: SetCall<Alert>) => void,
+    deleteAccount: (body: FormData, alertCall: SetCall<Alert>) => void
 }
 
 const userStore = create<UserStore>()((set) => ({
@@ -27,16 +30,20 @@ const userStore = create<UserStore>()((set) => ({
             const { data } = await axiosInstance.get<UserResponse>('/user');
 
             set(() => ({ user: data.user }));
+
         } catch (error) {
             set(() => ({ user: undefined }));
-            //TODO alert
         }
 
         set(() => ({ loading: false }));
     },
-    logOut: async () => {
+    logOut: async (alertCall) => {
         try {
             const { data } = await axiosInstance.post<ApiResponse>('/user');
+
+            alertStore.getState().setAlert(
+                alertCall, { msg: data.msg , success: true }
+            );
 
             set(() => ({ user: undefined }));
 
@@ -44,25 +51,43 @@ const userStore = create<UserStore>()((set) => ({
 
             location.href = '/login';
         } catch (error) {
-            //TODO alert
+            if (error instanceof AxiosError) {
+
+                const { message, msg } = error.response?.data;
+
+                alertStore.getState().setAlert(
+                    alertCall, { msg: msg ?? message, success: false }
+                );
+            }
         }
     },
-    verifyEmail: async (token) => {
+    verifyEmail: async (token, alertCall) => {
 
         try {
-            await axiosInstance.patch(`/verify_email/`, [], {
+            const { data } = await axiosInstance.patch(`/verify_email/`, [], {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
             });
+
+            alertStore.getState().setAlert(
+                alertCall, { msg: data.msg , success: true }
+            );
         } catch (error) {
-            //TODO alert
+            if (error instanceof AxiosError) {
+
+                const { message, msg } = error.response?.data;
+
+                alertStore.getState().setAlert(
+                    alertCall, { msg: msg ?? message, success: false }
+                );
+            }
         }
 
         set(() => ({ loading: false }));
 
     },
-    updateUser: async (body) => {
+    updateUser: async (body, alertCall) => {
 
         try {
             const { data } = await axiosInstance.post<UserResponse>(`/user`, {
@@ -72,12 +97,21 @@ const userStore = create<UserStore>()((set) => ({
 
             set(() => ({ user: data.user }));
 
-            //TODO alert
+            alertStore.getState().setAlert(
+                alertCall, { msg: data.msg , success: true }
+            );
         } catch (error) {
-            //TODO alert
+            if (error instanceof AxiosError) {
+
+                const { message, msg } = error.response?.data;
+
+                alertStore.getState().setAlert(
+                    alertCall, { msg: msg ?? message, success: false }
+                );
+            }
         }
     },
-    changePassword: async (body) => {
+    changePassword: async (body, alertCall) => {
 
         try {
             const { data } = await axiosInstance.post<ApiResponse>(`/user/change-password`, {
@@ -85,24 +119,42 @@ const userStore = create<UserStore>()((set) => ({
                 _method: 'PATCH'
             });
 
-            //TODO alert
+            alertStore.getState().setAlert(
+                alertCall, { msg: data.msg , success: true }
+            );
         } catch (error) {
-            //TODO alert
+            if (error instanceof AxiosError) {
+
+                const { message, msg } = error.response?.data;
+
+                alertStore.getState().setAlert(
+                    alertCall, { msg: msg ?? message , success: false }
+                );
+            }
         }
 
     },
-    deleteAccount: async (body) => {
+    deleteAccount: async (body, alertCall) => {
         try {
             const { data } = await axiosInstance.post<ApiResponse>(`/user`, {
                 ...getFormData(body),
                 _method: 'DELETE'
             });
 
-            //TODO alert
+            alertStore.getState().setAlert(
+                alertCall, { msg: data.msg , success: true }
+            );
 
             set(() => ({ user: undefined }));
         } catch (error) {
-            //TODO alert
+            if (error instanceof AxiosError) {
+
+                const { message, msg } = error.response?.data;
+
+                alertStore.getState().setAlert(
+                    alertCall, { msg: msg ?? message , success: false }
+                );
+            }
         }
     }
 }));

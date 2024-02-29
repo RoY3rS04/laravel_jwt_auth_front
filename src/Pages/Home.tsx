@@ -2,11 +2,13 @@ import { useState } from "react";
 import userStore from "../stores/UserStore";
 import clsx from "clsx";
 import { Link } from "react-router-dom";
+import Alert from '../components/Alert';
 
 export default function Home() {
 
     const { user, logOut } = userStore();
     const [menu, setMenu] = useState(false);
+    const [alert, setAlert] = useState<Alert | undefined>(undefined);
 
     function handleMenu() {
         setMenu(prev => !prev);
@@ -32,14 +34,21 @@ export default function Home() {
                                 <Link to='/profile'>Profile</Link>
                             </li>
                             <li className="text-red-600">
-                                <button onClick={logOut}>LogOut</button>
+                                <button onClick={() => logOut(setAlert)}>LogOut</button>
                             </li>
                         </ul>
                     </div>
                 </div>
             </header>
             <div className="w-full flex flex-1 items-center justify-center">
-                <h1 className="text-3xl font-bold">Welcome Again, { user?.name }!</h1>
+                <div className="space-y-5">
+                    <h1 className="text-3xl font-bold">Welcome again {user?.name}!</h1>
+                    {
+                        alert ? (
+                            <Alert msg={alert.msg} success={alert.success} />
+                        ) : null
+                    }
+                </div>
             </div>
         </section>
     )

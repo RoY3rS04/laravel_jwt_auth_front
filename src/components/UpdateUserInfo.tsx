@@ -1,11 +1,13 @@
 import { FormEvent, useState } from "react";
 import userStore from "../stores/UserStore"
+import Alert from "./Alert";
 
 export default function UpdateUserInfo() {
 
     const { user, updateUser } = userStore();
     const [name, setName] = useState(user?.name);
     const [email, setEmail] = useState(user?.email);
+    const [alert, setAlert] = useState<Alert | undefined>(undefined);
     
     function handleSubmit(e: FormEvent<HTMLFormElement>) {
 
@@ -13,7 +15,7 @@ export default function UpdateUserInfo() {
 
         const data = new FormData(e.target as HTMLFormElement);
 
-        updateUser(data);
+        updateUser(data, setAlert);
 
     }
 
@@ -39,6 +41,11 @@ export default function UpdateUserInfo() {
                 <button className="py-3 px-2 rounded-md bg-slate-900 text-sm text-white font-medium">
                     Update Profile
                 </button>
+                {
+                    alert ?
+                        (<Alert msg={alert.msg} success={alert.success}></Alert>)
+                    : null
+                }
             </form>
         </div>
     )

@@ -1,16 +1,18 @@
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import userStore from "../stores/UserStore"
 import { useParams } from "react-router-dom";
+import Alert from "../components/Alert";
 
 export default function VerifyEmail() {
 
     const { verifyEmail, loading } = userStore();
     const { token } = useParams();
+    const [alert, setAlert] = useState<Alert | undefined>(undefined);
 
     useEffect(() => {
 
         if (token) {
-            verifyEmail(token);
+            verifyEmail(token, setAlert);
         }
 
     }, [])
@@ -22,9 +24,9 @@ export default function VerifyEmail() {
                     <p>Loading...</p>
                 )
                 : (
-                    <>
-                        {/* Todo alert */}
-                    </>
+                    alert ? (
+                            <Alert msg={alert.msg} success={alert.success} />
+                    ) : null
                 )
             }
         </div>
